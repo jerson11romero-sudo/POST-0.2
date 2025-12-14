@@ -1,4 +1,4 @@
- // app.js - VERSIÓN CORREGIDA - FUNCIONA 100%
+// app.js - VERSIÓN COMPLETA Y CORREGIDA
 const SUPABASE_URL = 'https://rezmgikurtxaaweipyvh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlem1naWt1cnR4YWF3ZWlweXZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3Mzc0OTYsImV4cCI6MjA4MTMxMzQ5Nn0.A0GJcGIanUC1ZUq-NQqUJZJ0YTCr2lQ4UYdot6SYjgM';
 
@@ -647,5 +647,3 @@ window.buscarProductoVenta = buscarProductoVenta;
 window.mostrarProductos = mostrarProductos;
 window.mostrarVentas = mostrarVentas;
 window.updateStats = updateStats;
-
-

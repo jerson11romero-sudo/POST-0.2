@@ -1,0 +1,601 @@
+ <!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POS System - Gestión de Inventario</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #3a0ca3;
+      --success-color: #4cc9f0;
+      --danger-color: #f72585;
+      --warning-color: #f8961e;
+      --info-color: #7209b7;
+      --light-color: #f8f9fa;
+      --dark-color: #212529;
+      --card-bg: #ffffff;
+      --sidebar-bg: #2b2d42;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: var(--primary-color) !important;
+    }
+
+    .navbar {
+      background: white;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 1rem 0;
+    }
+
+    .card {
+      border: none;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      border-bottom: none;
+      padding: 1rem 1.5rem;
+      border-radius: 15px 15px 0 0 !important;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    .btn {
+      border-radius: 10px;
+      font-weight: 500;
+      padding: 0.5rem 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .btn-success {
+      background: linear-gradient(90deg, #4cc9f0, #4895ef);
+      border: none;
+    }
+
+    .btn-danger {
+      background: linear-gradient(90deg, #f72585, #b5179e);
+      border: none;
+    }
+
+    .btn-warning {
+      background: linear-gradient(90deg, #f8961e, #f3722c);
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      border: none;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-control {
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.2);
+    }
+
+    h2 {
+      color: var(--secondary-color);
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      position: relative;
+      padding-bottom: 10px;
+    }
+
+    h2:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary-color), var(--success-color));
+      border-radius: 2px;
+    }
+
+    .total-display {
+      background: linear-gradient(135deg, #3a0ca3, #4361ee);
+      color: white;
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 20px rgba(67, 97, 238, 0.3);
+    }
+
+    .total-display h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .total-display p {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+
+    .table {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .table thead th {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+      color: white;
+      border: none;
+      font-weight: 600;
+      padding: 1rem;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s;
+    }
+
+    .table tbody tr:hover {
+      background-color: rgba(67, 97, 238, 0.05);
+      transform: scale(1.01);
+    }
+
+    .table td {
+      padding: 1rem;
+      vertical-align: middle;
+      border-color: #f1f1f1;
+    }
+
+    .badge {
+      padding: 0.4em 0.8em;
+      font-weight: 500;
+      border-radius: 8px;
+    }
+
+    .badge-stock {
+      background-color: rgba(76, 201, 240, 0.15);
+      color: #4cc9f0;
+    }
+
+    .badge-sold {
+      background-color: rgba(247, 37, 133, 0.15);
+      color: #f72585;
+    }
+
+    .list-group-item {
+      border: none;
+      border-bottom: 1px solid #eee;
+      padding: 1rem;
+      transition: all 0.3s;
+    }
+
+    .list-group-item:hover {
+      background-color: rgba(67, 97, 238, 0.05);
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .status-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 8px;
+    }
+
+    .status-active {
+      background-color: #4cc9f0;
+      box-shadow: 0 0 8px #4cc9f0;
+    }
+
+    .status-inactive {
+      background-color: #adb5bd;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #aaa;
+    }
+
+    .search-box input {
+      padding-left: 40px;
+    }
+
+    .action-buttons .btn {
+      margin-right: 5px;
+      min-width: 40px;
+      padding: 0.4rem;
+    }
+
+    .alert-custom {
+      background: linear-gradient(90deg, rgba(76, 201, 240, 0.1), rgba(72, 149, 239, 0.1));
+      border: none;
+      border-left: 4px solid #4cc9f0;
+      border-radius: 10px;
+    }
+
+    .footer {
+      margin-top: 2rem;
+      padding: 1.5rem 0;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+      text-align: center;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .card-body {
+        padding: 1rem;
+      }
+      
+      .total-display h1 {
+        font-size: 2.5rem;
+      }
+      
+      .table-responsive {
+        border-radius: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <i class="fas fa-store me-2"></i>POS System
+      </a>
+      <div class="d-flex align-items-center">
+        <div class="me-3 d-none d-md-block">
+          <span class="text-muted"><i class="far fa-calendar me-1"></i> <span id="currentDate"></span></span>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-outline-primary dropdown-toggle" type="button" id="userMenu" data-bs-toggle="dropdown">
+            <i class="fas fa-user-circle me-1"></i> Administrador
+          </button>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#" onclick="exportarPDF()"><i class="fas fa-file-pdf me-2"></i>Exportar PDF</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="#" onclick="limpiarHistorial()"><i class="fas fa-trash-alt me-2"></i>Cerrar Día</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+      <div class="col">
+        <h2 class="text-center">
+          <i class="fas fa-shopping-cart me-2"></i>Sistema de Inventario y Ventas
+        </h2>
+        <p class="text-center text-muted mb-0">Gestión completa de productos, stock y transacciones</p>
+      </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-boxes fa-2x text-primary"></i>
+            </div>
+            <h3 id="totalProducts">0</h3>
+            <p class="text-muted mb-0">Productos Registrados</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-chart-line fa-2x text-success"></i>
+            </div>
+            <h3 id="totalSales">0</h3>
+            <p class="text-muted mb-0">Ventas Hoy</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-money-bill-wave fa-2x text-warning"></i>
+            </div>
+            <h3>S/ <span id="totalAmount">0.00</span></h3>
+            <p class="text-muted mb-0">Ingresos Totales</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 col-sm-6 mb-3">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fas fa-exclamation-triangle fa-2x text-danger"></i>
+            </div>
+            <h3 id="lowStock">0</h3>
+            <p class="text-muted mb-0">Stock Bajo</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+      <!-- Left Column: Product Management -->
+      <div class="col-lg-4">
+        <!-- Product Card -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-box me-2"></i>Gestión de Productos</span>
+            <span class="status-indicator status-active"></span>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Código de Barras</label>
+              <div class="search-box">
+                <i class="fas fa-barcode"></i>
+                <input id="codigo" class="form-control" placeholder="Ingrese código o escanee">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label class="form-label fw-bold">Nombre del Producto</label>
+              <input id="nombre" class="form-control" placeholder="Ej: Leche Gloria">
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Precio (S/)</label>
+                <input id="precio" type="number" class="form-control" placeholder="0.00" step="0.01">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-bold">Stock</label>
+                <input id="stock" type="number" class="form-control" placeholder="Cantidad">
+              </div>
+            </div>
+            
+            <button class="btn btn-success w-100 py-2" onclick="guardarProducto()">
+              <i class="fas fa-save me-2"></i>Guardar / Actualizar Producto
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Sale Card -->
+        <div class="card mt-4">
+          <div class="card-header">
+            <i class="fas fa-cash-register me-2"></i>Venta Rápida
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              <label class="form-label fw-bold">Escanear Código</label>
+              <input id="codigoVenta" class="form-control" placeholder="Código de producto" autofocus>
+              <small class="text-muted">Presione Enter después de escanear</small>
+            </div>
+            
+            <div class="alert alert-custom">
+              <div class="d-flex justify-content-between mb-2">
+                <span class="fw-bold">Producto:</span>
+                <span id="ventaNombre" class="fw-bold">---</span>
+              </div>
+              <div class="d-flex justify-content-between mb-2">
+                <span>Precio de venta:</span>
+                <input id="precioVenta" type="number" class="form-control w-50" placeholder="0.00" step="0.01">
+              </div>
+              <div class="d-flex justify-content-between">
+                <span>Stock disponible:</span>
+                <span id="ventaStock" class="badge badge-stock">0 unidades</span>
+              </div>
+            </div>
+            
+            <button class="btn btn-danger w-100 py-2" onclick="vender()">
+              <i class="fas fa-shopping-bag me-2"></i>Registrar Venta
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Middle Column: Inventory -->
+      <div class="col-lg-8">
+        <!-- Inventory Table -->
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-clipboard-list me-2"></i>Inventario de Productos</span>
+            <div class="d-flex">
+              <input type="text" class="form-control form-control-sm me-2" id="searchInventory" placeholder="Buscar producto...">
+              <button class="btn btn-sm btn-outline-primary" onclick="mostrarProductos()">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead>
+                  <tr>
+                    <th width="15%">Código</th>
+                    <th width="30%">Producto</th>
+                    <th width="15%">COSTO (S/)</th>
+                    <th width="15%">Stock</th>
+                    <th width="25%" class="text-center">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaProductos"></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card-footer text-muted">
+            <div class="d-flex justify-content-between">
+              <span id="productCount">Mostrando 0 productos</span>
+              <span><i class="fas fa-info-circle me-1"></i> Haga clic en un producto para editarlo</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales History -->
+        <div class="card mt-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="fas fa-history me-2"></i>Historial de Ventas</span>
+            <div>
+              <button class="btn btn-sm btn-primary me-1" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf me-1"></i>PDF
+              </button>
+              <button class="btn btn-sm btn-outline-danger" onclick="limpiarHistorial()">
+                <i class="fas fa-trash-alt me-1"></i>Cerrar Día
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <ul class="list-group list-group-flush" id="historial"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6 text-md-start text-center">
+            <p class="mb-0">
+              <i class="fas fa-store text-primary me-1"></i> 
+              <strong>POS System</strong> v2.0 • Sistema de Gestión Comercial
+            </p>
+          </div>
+          <div class="col-md-6 text-md-end text-center">
+            <p class="mb-0">
+              <i class="far fa-clock me-1"></i> 
+              Última actualización: <span id="lastUpdate">Hoy</span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Tu archivo app.js -->
+  <script src="app.js"></script>
+  
+  <script>
+    // Actualizar fecha y hora en tiempo real
+    function updateDateTime() {
+      const now = new Date();
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', options);
+      
+      // Actualizar cada minuto
+      setTimeout(updateDateTime, 60000);
+    }
+    
+    // Inicializar fecha
+    updateDateTime();
+    
+    // Actualizar estadísticas
+    function updateStats() {
+      const totalProducts = productos.length;
+      const totalSales = ventas.length;
+      const totalAmount = ventas.reduce((sum, sale) => sum + sale.precio, 0);
+      const lowStock = productos.filter(p => p.stock < 5).length;
+      
+      document.getElementById('totalProducts').textContent = totalProducts;
+      document.getElementById('totalSales').textContent = totalSales;
+      document.getElementById('totalAmount').textContent = totalAmount.toFixed(2);
+      document.getElementById('lowStock').textContent = lowStock;
+      document.getElementById('productCount').textContent = `Mostrando ${totalProducts} productos`;
+    }
+    
+    // Sobrescribir funciones para actualizar estadísticas
+    const originalGuardarProducto = window.guardarProducto;
+    window.guardarProducto = function() {
+      originalGuardarProducto();
+      updateStats();
+    };
+    
+    const originalVender = window.vender;
+    window.vender = function() {
+      originalVender();
+      updateStats();
+    };
+    
+    const originalEliminarProducto = window.eliminarProducto;
+    window.eliminarProducto = function(cod) {
+      originalEliminarProducto(cod);
+      updateStats();
+    };
+    
+    const originalMostrarVentas = window.mostrarVentas;
+    window.mostrarVentas = function() {
+      originalMostrarVentas();
+      updateStats();
+    };
+    
+    // Inicializar estadísticas
+    window.addEventListener('DOMContentLoaded', () => {
+      updateStats();
+      mostrarProductos();
+      mostrarVentas();
+    });
+  </script>
+</body>
+</html>

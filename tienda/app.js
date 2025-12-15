@@ -1,4 +1,4 @@
-// app.js - VERSIÓN COMPLETA Y CORREGIDA
+ // app.js - VERSIÓN FINAL CORREGIDA
 const SUPABASE_URL = 'https://rezmgikurtxaaweipyvh.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJlem1naWt1cnR4YWF3ZWlweXZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU3Mzc0OTYsImV4cCI6MjA4MTMxMzQ5Nn0.A0GJcGIanUC1ZUq-NQqUJZJ0YTCr2lQ4UYdot6SYjgM';
 
@@ -61,9 +61,9 @@ async function initApp() {
         // Configurar event listeners
         setupEventListeners();
         
-        // Actualizar estadísticas y fecha
-        updateStats();
+        // Inicializar fecha y hora
         updateDateTime();
+        setInterval(updateDateTime, 60000); // Actualizar cada minuto
         
         // Auto-focus en campo de venta
         document.getElementById('codigoVenta').focus();
@@ -154,7 +154,7 @@ async function buscarProductoVenta() {
 async function mostrarProductos() {
     try {
         console.log('📦 Cargando productos...');
-        const productos = await supabaseFetch('productos?select=*');
+        const productos = await supabaseFetch('productos?select=*&order=id.desc');
         productosGlobales = productos || [];
         
         const tablaProductos = document.getElementById('tablaProductos');
@@ -257,10 +257,18 @@ async function guardarProducto() {
     };
     
     try {
-        // Insertar o actualizar producto
-        await supabaseFetch('productos', 'POST', producto);
+        // Verificar si el producto ya existe
+        const productos = await supabaseFetch(`productos?codigo=eq.${codigo}`);
         
-        alert('✅ Producto guardado exitosamente');
+        if (productos && productos.length > 0) {
+            // Actualizar producto existente
+            await supabaseFetch(`productos?codigo=eq.${codigo}`, 'PATCH', producto);
+            alert('✅ Producto actualizado exitosamente');
+        } else {
+            // Insertar nuevo producto
+            await supabaseFetch('productos', 'POST', producto);
+            alert('✅ Producto guardado exitosamente');
+        }
         
         // Limpiar campos y actualizar lista
         limpiarCampos();
@@ -342,7 +350,7 @@ async function vender() {
         
         // 2. Actualizar stock
         const nuevoStock = productoVenta.stock - 1;
-        await supabaseFetch(`productos?id=eq.${productoVenta.id}`, 'PATCH', { 
+        await supabaseFetch(`productos?codigo=eq.${productoVenta.codigo}`, 'PATCH', { 
             stock: nuevoStock 
         });
         
@@ -366,7 +374,7 @@ async function mostrarVentas() {
         const hoy = new Date();
         hoy.setHours(0, 0, 0, 0);
         
-        const ventas = await supabaseFetch(`ventas?created_at=gte.${hoy.toISOString()}`);
+        const ventas = await supabaseFetch(`ventas?created_at=gte.${hoy.toISOString()}&order=created_at.desc`);
         ventasGlobales = ventas || [];
         
         const historial = document.getElementById('historial');
@@ -408,7 +416,7 @@ async function mostrarVentas() {
             });
             
             // Actualizar total
-            const totalElement = document.getElementById('total');
+            const totalElement = document.getElementById('totalAmount');
             if (totalElement) {
                 totalElement.textContent = total.toFixed(2);
             }
@@ -646,4 +654,3 @@ window.vender = vender;
 window.buscarProductoVenta = buscarProductoVenta;
 window.mostrarProductos = mostrarProductos;
 window.mostrarVentas = mostrarVentas;
-window.updateStats = updateStats;
